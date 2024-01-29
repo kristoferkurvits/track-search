@@ -1,7 +1,12 @@
 import ResolverError from "../error/resolverError";
 
 import {Track, ITrack} from "../model/track.model";
-const { fetchTrackFromExternalAPI } = require("./externalApiHelper");
+import AcrCloudAPIClient from "../api/acrCloudApClient";
+import AppConfig from "../config/appConfig";
+
+const config = AppConfig.getInstance();
+const acrCloudApClient = new AcrCloudAPIClient(config.ACR_TOKEN);
+
 
 const trackResolvers = {
   Query: {
@@ -10,14 +15,15 @@ const trackResolvers = {
     try {
       track = await Track.findOne({ name, artistName });
       if (!track) {
-        const externalTrackData = await fetchTrackFromExternalAPI(name, artistName);
+        //TODO create and pass query params to request
+        const externalTrackData = await acrCloudApClient.fetchTrackMetadata();
         // Validate externalTrackData here before saving
         track = new Track(externalTrackData);
         await track.save();
       }
     } catch (error) {
       console.error("Error while fetching track by name and artist ", error);
-      throw new ResolverError("Failed to fetch the track", ResolverErrorCodes.FAILED_TO_FETCH_TRACK);
+      throw new ResolverError("Failed to fetch the track", ErrorCodes.FAILED_TO_GET_TRACK);
     }
     return track;
     },
@@ -27,7 +33,7 @@ const trackResolvers = {
         return await Track.find({});
       } catch(error) {
         console.error("Error while fetching tracks: ", error);
-        throw new ResolverError("Failed to fetch tracks", ResolverErrorCodes.FAILED_TO_FETCH_TRACKS);
+        throw new ResolverError("Failed to fetch tracks", ErrorCodes.FAILED_TO_GET_TRACKS);
       }
         
     },
@@ -35,12 +41,12 @@ const trackResolvers = {
       try {
         const track = await Track.findById(id);
         if (!track) {
-          throw new ResolverError('Track not found', ResolverErrorCodes.TRACK_NOT_FOUND);
+          throw new ResolverError('Track not found', ErrorCodes.TRACK_NOT_FOUND);
         }
         return track;
       } catch (error) {
         console.error("Error while fetching track by ID: ", error);
-        throw new ResolverError("Failed to fetch track by ID", ResolverErrorCodes.FAILED_TO_FETCH_TRACK);
+        throw new ResolverError("Failed to fetch track by ID", ErrorCodes.FAILED_TO_GET_TRACK);
       }
       },
   },
@@ -49,12 +55,12 @@ const trackResolvers = {
       try {
         const track = await Track.findByIdAndUpdate(id, input, { new: true });
         if (!track) {
-          throw new ResolverError("Failed to update track", ResolverErrorCodes.TRACK_NOT_FOUND);
+          throw new ResolverError("Failed to update track", ErrorCodes.TRACK_NOT_FOUND);
         }
         return track;
       } catch (error) {
         console.error("Error while updating track with ID: " + id, error);
-        throw new ResolverError("Failed to update track with ID: " + id, ResolverErrorCodes.FAILED_TO_FETCH_TRACK);
+        throw new ResolverError("Failed to update track with ID: " + id, ErrorCodes.FAILED_TO_GET_TRACK);
       }
         
     },
@@ -62,12 +68,12 @@ const trackResolvers = {
       try {
         const track = await Track.findByIdAndDelete(id);
         if (!track) {
-          throw new ResolverError('Track not found', ResolverErrorCodes.TRACK_NOT_FOUND);
+          throw new ResolverError('Track not found', ErrorCodes.TRACK_NOT_FOUND);
         }
         return { message: "Track deleted successfully", id };
       } catch (error) {
         console.error("Error while deleting track: ", error);
-        throw new ResolverError("Failed to delete the track", ResolverErrorCodes.FAILED_TO_DELETE_TRACK);
+        throw new ResolverError("Failed to delete the track", ErrorCodes.FAILED_TO_DELETE_TRACK);
       }
     },
   },
