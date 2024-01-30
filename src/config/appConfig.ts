@@ -6,14 +6,17 @@ require('dotenv').config({
 interface Config {
     NODE_ENV: string;
     ACR_TOKEN: string;
+    JWT_SECRET: string;
 }
 
 class AppConfig implements Config {
     NODE_ENV: string;
     ACR_TOKEN: string;
+    JWT_SECRET: string;
 
     constructor() {
       this.ACR_TOKEN = process.env.ACR_TOKEN;
+      this.JWT_SECRET = process.env.JWT_SECRET;
     }
 
     private static instance: AppConfig;
