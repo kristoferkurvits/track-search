@@ -1,11 +1,9 @@
-import express from "express";
-const app = express();
-const port = 3000;
+import 'dotenv/config';
+import { ApolloServer } from 'apollo-server';
+import { apolloServerConfig } from './config/apolloConfig';
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+const server = new ApolloServer(apolloServerConfig);
 
-app.listen(port, () => {
-  return console.log(`Express is listening at http://localhost:${port}`);
+server.listen().then(({ url }) => {
+  console.log(`🚀 Server ready at ${url}`);
 });

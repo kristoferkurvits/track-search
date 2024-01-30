@@ -1,73 +1,54 @@
 import ResolverError from "../error/resolverError";
+import { trackService } from '../service/trackService';
+import { ITrack } from '../model/track.model';
+import { generateToken } from "../config/auth";
 
-import {Track, ITrack} from "../model/track.model";
-const { fetchTrackFromExternalAPI } = require("./externalApiHelper");
-
-const trackResolvers = {
+export const trackResolvers = {
   Query: {
-    getTrackByNameAndArtist: async (_, { name, artistName }): Promise<ITrack> => {
-      let track = null;
-    try {
-      track = await Track.findOne({ name, artistName });
-      if (!track) {
-        const externalTrackData = await fetchTrackFromExternalAPI(name, artistName);
-        // Validate externalTrackData here before saving
-        track = new Track(externalTrackData);
-        await track.save();
-      }
-    } catch (error) {
-      console.error("Error while fetching track by name and artist ", error);
-      throw new ResolverError("Failed to fetch the track", ResolverErrorCodes.FAILED_TO_FETCH_TRACK);
-    }
-    return track;
+    issueToken: async (_, {context}) => {
+      return generateToken(context.requestId);
     },
-    //Consider implementing pagination
+    getTrackByNameAndArtist: async (_, { name, artistName }): Promise<ITrack> => {
+      try {
+        return await trackService.getTrackByNameAndArtist(name, artistName);
+      } catch (error) {
+        console.error("Error while fetching track by name and artist ", error);
+        throw new ResolverError("Failed to fetch the track", ErrorCodes.FAILED_TO_GET_TRACK);
+      }
+    },
     getAllTracks: async (): Promise<ITrack[]> => {
       try {
-        return await Track.find({});
-      } catch(error) {
-        console.error("Error while fetching tracks: ", error);
-        throw new ResolverError("Failed to fetch tracks", ResolverErrorCodes.FAILED_TO_FETCH_TRACKS);
+        return await trackService.getAllTracks();
+      } catch (error) {
+        console.error("Error while fetching all tracks: ", error);
+        throw new ResolverError("Failed to fetch tracks", ErrorCodes.FAILED_TO_GET_TRACKS);
+
       }
-        
     },
     getTrackById: async (_, { id }): Promise<ITrack> => {
       try {
-        const track = await Track.findById(id);
-        if (!track) {
-          throw new ResolverError('Track not found', ResolverErrorCodes.TRACK_NOT_FOUND);
-        }
-        return track;
+        return await trackService.getTrackById(id);
       } catch (error) {
         console.error("Error while fetching track by ID: ", error);
-        throw new ResolverError("Failed to fetch track by ID", ResolverErrorCodes.FAILED_TO_FETCH_TRACK);
+        throw new ResolverError("Failed to fetch track by ID", ErrorCodes.FAILED_TO_GET_TRACK);
       }
-      },
+    },
   },
   Mutation: {
     updateTrack: async (_, { id, input }): Promise<ITrack> => {
       try {
-        const track = await Track.findByIdAndUpdate(id, input, { new: true });
-        if (!track) {
-          throw new ResolverError("Failed to update track", ResolverErrorCodes.TRACK_NOT_FOUND);
-        }
-        return track;
+        return await trackService.updateTrack(id, input);
       } catch (error) {
-        console.error("Error while updating track with ID: " + id, error);
-        throw new ResolverError("Failed to update track with ID: " + id, ResolverErrorCodes.FAILED_TO_FETCH_TRACK);
+        console.error(`Error while updating track with ID: ${id}`, error);
+        throw new ResolverError("Failed to update track", ErrorCodes.FAILED_TO_UPDATE_TRACK);
       }
-        
     },
     deleteTrack: async (_, { id }) => {
       try {
-        const track = await Track.findByIdAndDelete(id);
-        if (!track) {
-          throw new ResolverError('Track not found', ResolverErrorCodes.TRACK_NOT_FOUND);
-        }
-        return { message: "Track deleted successfully", id };
+        return await trackService.deleteTrack(id);
       } catch (error) {
         console.error("Error while deleting track: ", error);
-        throw new ResolverError("Failed to delete the track", ResolverErrorCodes.FAILED_TO_DELETE_TRACK);
+        throw new ResolverError("Failed to delete the track", ErrorCodes.FAILED_TO_DELETE_TRACK);
       }
     },
   },
