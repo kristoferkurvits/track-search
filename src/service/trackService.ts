@@ -2,23 +2,30 @@ import { Track, ITrack } from "../model/track.model";
 import AcrCloudAPIClient from "../api/acrCloudApClient";
 import AppConfig from "../config/appConfig";
 import ResolverError from "../error/resolverError";
+import { ErrorCodes } from '../util/constants';
+import {trackMetadataResponseSchema} from "../model/api/validations/trackMetadataValidation";
+import { mapTracks } from "../util/mapper";
 
 const config = AppConfig.getInstance();
 const acrCloudApClient = new AcrCloudAPIClient(config.ACR_TOKEN);
 
 class TrackService {
-  async getTrackByNameAndArtist(name: string, artistName: string): Promise<ITrack> {
-    let track = await Track.findOne({ name, artistName });
-    if (!track) {
+  async getTrackByNameAndArtist(name: string, artistName: string): Promise<ITrack[]> {
+    let tracks = await Track.find({
+      //The reason of using regex is that external API returns different versions of a song, e.g remixes etc. So im looking for multiple matches.
+      name: { $regex: `^${name}`, $options: 'i' },
+      artistName 
+      }).exec() as ITrack[];
+    if (tracks.length === 0) {
       const externalTrackData = await acrCloudApClient.fetchTrackMetadata({
         query: JSON.stringify({ "track": name, "artists": [artistName] }),
         format: 'json'
       });
-      // Validate externalTrackData here before saving
-      track = new Track(externalTrackData);
-      await track.save();
+      trackMetadataResponseSchema.validate(externalTrackData);
+      tracks = mapTracks(externalTrackData);
+      await Track.insertMany(tracks);
     }
-    return track;
+    return tracks;
   }
 
   async getAllTracks(): Promise<ITrack[]> {

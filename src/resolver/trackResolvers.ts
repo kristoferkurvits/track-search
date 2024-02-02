@@ -2,13 +2,11 @@ import ResolverError from "../error/resolverError";
 import { trackService } from '../service/trackService';
 import { ITrack } from '../model/track.model';
 import { generateToken } from "../config/auth";
+import { ErrorCodes } from '../util/constants';
 
 export const trackResolvers = {
   Query: {
-    issueToken: async (_, {context}) => {
-      return generateToken(context.requestId);
-    },
-    getTrackByNameAndArtist: async (_, { name, artistName }): Promise<ITrack> => {
+    getTrackByNameAndArtist: async (_, { name, artistName }): Promise<ITrack[]> => {
       try {
         return await trackService.getTrackByNameAndArtist(name, artistName);
       } catch (error) {
@@ -35,6 +33,15 @@ export const trackResolvers = {
     },
   },
   Mutation: {
+    issueToken: (): String => {
+      try {
+        console.log("issueToken mutation");
+        return generateToken();
+      }catch (error) {
+        console.error(`Error while generating token`, error);
+        throw new ResolverError("Failed to generate token", ErrorCodes.FAILED_TO_UPDATE_TRACK);
+      }
+    },
     updateTrack: async (_, { id, input }): Promise<ITrack> => {
       try {
         return await trackService.updateTrack(id, input);
@@ -43,7 +50,7 @@ export const trackResolvers = {
         throw new ResolverError("Failed to update track", ErrorCodes.FAILED_TO_UPDATE_TRACK);
       }
     },
-    deleteTrack: async (_, { id }) => {
+    deleteTrack: async (_, { id }): Promise<{ message: string, id: string }> => {
       try {
         return await trackService.deleteTrack(id);
       } catch (error) {

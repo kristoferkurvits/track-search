@@ -1,4 +1,4 @@
-class ErrorCodes {
+export class ErrorCodes {
     //Resolver
     static TRACK_NOT_FOUND = "TRACK_NOT_FOUND";
     static FAILED_TO_UPDATE_TRACK = "FAILED_TO_UPDATE_TRACK";
@@ -11,5 +11,3 @@ class ErrorCodes {
     static FAILED_TO_FETCH_TRACK_METADATA = "FAILED_TO_FETCH_TRACK_METADATA";
 
 }
-  
-module.exports = ErrorCodes;

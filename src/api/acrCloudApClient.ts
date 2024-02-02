@@ -4,6 +4,10 @@ import {ITrackSearchParams} from "../model/api/acrCloudApiRequest.model";
 import { ITrackMetadataResponse } from "../model/api/acrCloudApiResponse.model";
 import { HttpClient } from "../config/HttpClientConfig";
 import ApiError from "../error/apiError";
+import { ErrorCodes } from '../util/constants';
+import AppConfig from "../config/appConfig";
+
+const ACR_BASE_URL = AppConfig.getInstance().ACR_BASE_URL;
 
 class AcrCloudAPIClient {
   private httpClient = HttpClient.getInstance();
@@ -16,7 +20,7 @@ class AcrCloudAPIClient {
   public async fetchTrackMetadata(params: ITrackSearchParams): Promise<ITrackMetadataResponse> {
     const config: AxiosRequestConfig = {
       method: 'get',
-      url: '/external-metadata/tracks',
+      url: ACR_BASE_URL+'/external-metadata/tracks',
       params: {
         ...params,
         query: params.query && typeof params.query === 'object' ? JSON.stringify(params.query) : params.query,

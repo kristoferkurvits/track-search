@@ -1,7 +1,10 @@
 scalar Date
 scalar JSON
 
-directive @rateLimit(max: Int, window: Int) on FIELD_DEFINITION
+schema {
+  query: Query
+  mutation: Mutation
+}
 
 interface BaseEntity {
   id: ID!
@@ -14,19 +17,20 @@ type Track implements BaseEntity {
   createdAt: Date!
   updatedAt: Date!
   name: String!
-  artistName: String!
+  artistName: [String]!
   duration: Int!
   ISRC: String!
-  releaseDate: Date!
+  releaseDate: Date
 }
 
 type Query {
-  issueToken(context: JSON): String @rateLimit(max: 5, window: 60)
+  getTrackByNameAndArtist(name: String!, artistName:String!): [Track]
   getTrackById(id: ID!): Track
   getAllTracks: [Track]
 }
 
 type Mutation {
+  issueToken: String!
   updateTrack(id: ID!, input: TrackInput): Track
   deleteTrack(id: ID!): ID
 }

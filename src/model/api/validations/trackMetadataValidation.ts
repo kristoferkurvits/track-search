@@ -96,6 +96,6 @@ const trackSchema = Joi.object({
   works: Joi.array().items(workSchema).required(),
 });
 
-const trackMetadataResponseSchema = Joi.object({
+export const trackMetadataResponseSchema = Joi.object({
   data: Joi.array().items(trackSchema).required(),
 });
