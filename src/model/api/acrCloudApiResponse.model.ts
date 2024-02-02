@@ -1,8 +1,8 @@
 export interface ITrackMetadataResponse {
-    data: ITrack[];
+    data: ITrackExternal[];
 }
 
-interface ITrack {
+interface ITrackExternal {
     name: string;
     disc_number: number;
     track_number: number;

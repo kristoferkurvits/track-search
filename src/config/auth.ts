@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import AppConfig from './appConfig';
 import AuthenticationError from '../error/authenticationError';
+import { ErrorCodes } from '../util/constants';
 const config = AppConfig.getInstance();
 
 export const verifyToken = (token: string): any => {
@@ -12,12 +13,19 @@ export const verifyToken = (token: string): any => {
 };
 
 
-export const generateToken = (requestId: string) => {
-  const payload = {
-    sub: requestId,
-    iat: Math.floor(Date.now() / 1000), // Issued at time
-    exp: Math.floor(Date.now() / 1000) + (60 * 60), //1 HOUR
-  };
-
-  return jwt.sign(payload, config.JWT_SECRET);
+export const generateToken = (): string => {
+  try {
+    const payload = {
+      sub: "test",
+      iat: Math.floor(Date.now() / 1000), // Issued at time
+      exp: Math.floor(Date.now() / 1000) + (60 * 60), // 1 HOUR
+    };
+    console.log("JWT Secret:", config.JWT_SECRET);
+    let token = jwt.sign(payload, config.JWT_SECRET);
+    console.log("Generated Token:", token);
+    return token;
+  } catch (error) {
+    console.error("Error generating token:", error);
+    throw error;
+  }
 };

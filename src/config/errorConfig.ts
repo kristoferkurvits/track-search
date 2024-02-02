@@ -13,7 +13,7 @@ export const formatGraphQLError = (error: GraphQLError) => {
       path: error.path,
     };
   }
-
+  console.log(JSON.stringify(error, null, 2));
   return {
     message: 'Internal Server Error',
     code: 'INTERNAL_SERVER_ERROR',

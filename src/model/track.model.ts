@@ -1,8 +1,8 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-export interface ITrack extends Document {
+export interface ITrack {
   name: string;
-  artistName: string;
+  artistName: string[];
   duration: number;
   ISRC: string;
   releaseDate: Date;
@@ -10,12 +10,12 @@ export interface ITrack extends Document {
   updatedAt: Date;
 }
 
-const trackSchema: Schema = new Schema({
+const trackSchema: Schema<ITrack> = new Schema({
   name: { type: String, required: true },
-  artistName: { type: String, required: true },
+  artistName: { type: [String], required: true },
   duration: { type: Number, required: true },
   ISRC: { type: String, required: true },
-  releaseDate: { type: Date, required: true },
+  releaseDate: { type: Date, required: false },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
