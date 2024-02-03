@@ -11,7 +11,8 @@
     "es2022"
   ],
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src/**/*.graphql"
   ],
   "exclude": [
     "node_modules",

@@ -8,8 +8,7 @@ RUN npm install
 
 COPY . .
 
-RUN npm run tsc
-RUN npx webpack
+RUN npm run build
 
 FROM node:21-alpine
 

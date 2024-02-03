@@ -1,13 +1,13 @@
-class ResolverError extends Error {
+class TrackServiceError extends Error {
   code: string
 
   constructor(message: string, code: any) {
     super(message);
-    this.name = "ResolverError";
+    this.name = "TrackServiceError";
     this.code = code;
 
-    Object.setPrototypeOf(this, ResolverError.prototype);
+    Object.setPrototypeOf(this, TrackServiceError.prototype);
   }
 }
 
-export default ResolverError;
+export default TrackServiceError;
