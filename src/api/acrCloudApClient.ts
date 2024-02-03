@@ -7,7 +7,9 @@ import ApiError from "../error/apiError";
 import { ErrorCodes } from '../util/constants';
 import AppConfig from "../config/appConfig";
 
-const ACR_BASE_URL = AppConfig.getInstance().ACR_BASE_URL;
+const config = AppConfig.getInstance();
+
+const ACR_BASE_URL = config.ACR_BASE_URL;
 
 class AcrCloudAPIClient {
   private httpClient = HttpClient.getInstance();
@@ -40,4 +42,4 @@ class AcrCloudAPIClient {
   }
 }
 
-export default AcrCloudAPIClient;
+export const acrCloudApClient = new AcrCloudAPIClient(config.ACR_TOKEN);

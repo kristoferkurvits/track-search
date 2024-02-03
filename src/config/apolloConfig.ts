@@ -59,7 +59,7 @@ export const apolloServerConfig = {
     context: ({ req }) => {
         const requestId = uuidv4();
         console.log(`Incoming request ${requestId}: ${req.body.operationName}`);
-      /*
+
         var tokenMutation = parse(req.body.query).definitions[0].selectionSet.selections[0].name.value;
         if (tokenMutation === "issueToken" || req.body.operationName === "IntrospectionQuery") {
             return {
@@ -68,12 +68,12 @@ export const apolloServerConfig = {
         }
 
         const tokenWithBearer = req.headers.authorization || '';
-        const token = tokenWithBearer.split(' ')[1]; // Bearer token
+        const token = tokenWithBearer.split(' ')[1];
         const user = verifyToken(token);
-        */
+
         return {
             requestId: requestId,
-            user: "test"
+            user: user
         };
     },
 };

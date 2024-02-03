@@ -18,13 +18,11 @@ export const verifyToken = (token: string): any => {
 export const generateToken = (): string => {
   try {
     const payload = {
-      sub: "test",
+      sub: "user_id",
       iat: Math.floor(Date.now() / 1000), // Issued at time
       exp: Math.floor(Date.now() / 1000) + (60 * 60), // 1 HOUR
     };
-    let token = jwt.sign(payload, config.JWT_SECRET);
-    console.log("Generated Token:", token);
-    return token;
+    return jwt.sign(payload, config.JWT_SECRET);
   } catch (error) {
     console.error(`Error while generating token`, error);
     throw new TrackServiceError("Failed to generate token", ErrorCodes.FAILED_TO_UPDATE_TRACK);
