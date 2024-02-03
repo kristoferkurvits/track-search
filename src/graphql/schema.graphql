@@ -31,14 +31,14 @@ type Query {
 
 type Mutation {
   issueToken: String!
-  updateTrack(id: ID!, input: TrackInput): Track
+  updateTrack(id: ID!, track: TrackInput): Track
   deleteTrack(id: ID!): ID
 }
 
 input TrackInput {
-  name: String!
-  artistName: String!
-  duration: Int!
-  ISRC: String!
-  releaseDate: Date!
+  name: String
+  artistName: [String]
+  duration: Int
+  ISRC: String
+  releaseDate: Date
 }

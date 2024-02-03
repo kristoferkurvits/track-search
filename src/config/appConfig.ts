@@ -8,6 +8,7 @@ interface Config {
     ACR_TOKEN: string;
     ACR_BASE_URL: string;
     JWT_SECRET: string;
+    DB_URL: string;
 }
 
 class AppConfig implements Config {
@@ -15,11 +16,13 @@ class AppConfig implements Config {
     ACR_TOKEN: string;
     ACR_BASE_URL: string;
     JWT_SECRET: string;
+    DB_URL: string;
 
     constructor() {
       this.ACR_TOKEN = process.env.ACR_TOKEN;
       this.ACR_BASE_URL = process.env.ACR_BASE_URL;
       this.JWT_SECRET = process.env.JWT_SECRET;
+      this.DB_URL = process.env.DB_URL;
     }
 
     private static instance: AppConfig;

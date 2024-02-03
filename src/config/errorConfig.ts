@@ -1,22 +1,22 @@
 import { GraphQLError } from 'graphql';
-import ResolverError from '../error/resolverError';
+import TrackServiceError from '../error/resolverError';
 import ApiError from '../error/apiError';
 
 export const formatGraphQLError = (error: GraphQLError) => {
-  if (error.originalError instanceof ResolverError ||
+  if (error.originalError instanceof TrackServiceError ||
     error.originalError instanceof ApiError
     ) {
     return {
-      message: error.message,
+      message: error.originalError.message,
       code: error.originalError.code,
       locations: error.locations,
       path: error.path,
     };
   }
-  console.log(JSON.stringify(error, null, 2));
+  console.error(JSON.stringify(error, null, 2));
   return {
-    message: 'Internal Server Error',
-    code: 'INTERNAL_SERVER_ERROR',
+    message: error.message,
+    code: error.extensions.code,
     locations: error.locations,
     path: error.path,
   };

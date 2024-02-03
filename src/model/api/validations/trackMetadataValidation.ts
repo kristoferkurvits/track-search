@@ -1,101 +1,102 @@
 import Joi from 'joi';
 
 const contributorSchema = Joi.object({
-  name: Joi.string().required(),
-  ipi: Joi.number().required(),
-  roles: Joi.array().items(Joi.string()).required(),
-});
+  name: Joi.string().optional().allow(null),
+  ipi: Joi.number().optional().allow(null),
+  roles: Joi.array().items(Joi.string().optional().allow(null)).optional().allow(null),
+}).unknown(true);
 
 const workSchema = Joi.object({
-  iswc: Joi.string().required(),
-  contributors: Joi.array().items(contributorSchema).required(),
-  name: Joi.string().required(),
-});
+  iswc: Joi.string().optional().allow(null),
+  contributors: Joi.array().items(contributorSchema).optional().allow(null),
+  name: Joi.string().optional().allow(null),
+}).unknown(true);
 
 const appleMusicMetadataSchema = Joi.object({
-  id: Joi.string().required(),
-  link: Joi.string().uri().required(),
-  preview: Joi.string().uri().required(),
-  artists: Joi.array().items(Joi.object({ id: Joi.string().required() })).required(),
+  id: Joi.string().optional().allow(null),
+  link: Joi.string().uri().optional().allow(null),
+  preview: Joi.string().uri().optional().allow(null),
+  artists: Joi.array().items(Joi.object({ id: Joi.string().optional().allow(null) }).unknown(true)).optional().allow(null),
   album: Joi.object({
-    id: Joi.string().required(),
-    cover: Joi.string().uri().required(),
-  }).required(),
-});
+    id: Joi.string().optional().allow(null),
+    cover: Joi.string().uri().optional().allow(null),
+  }).unknown(true).optional().allow(null),
+}).unknown(true);
 
 const deezerMetadataSchema = Joi.object({
-  id: Joi.string().required(),
-  link: Joi.string().uri().required(),
-  artists: Joi.array().items(Joi.object({ id: Joi.number().required() })).required(),
+  id: Joi.string().optional().allow(null),
+  link: Joi.string().uri().optional().allow(null),
+  artists: Joi.array().items(Joi.object({ id: Joi.number().optional().allow(null) }).unknown(true)).optional().allow(null),
   album: Joi.object({
-    id: Joi.number().required(),
-    cover: Joi.string().uri().required(),
-  }).required(),
-});
+    id: Joi.number().optional().allow(null),
+    cover: Joi.string().uri().optional().allow(null),
+  }).unknown(true).optional().allow(null),
+}).unknown(true);
 
 const youtubeMetadataSchema = Joi.object({
-  id: Joi.string().required(),
-  link: Joi.string().uri().required(),
+  id: Joi.string().optional().allow(null),
+  link: Joi.string().uri().optional().allow(null),
   artists: Joi.array().items(Joi.object({
-    id: Joi.string().required(),
-    link: Joi.string().uri().required(),
-  })).required(),
+    id: Joi.string().optional().allow(null),
+    link: Joi.string().uri().optional().allow(null),
+  })).optional().allow(null),
   album: Joi.object({
-    id: Joi.string().required(),
-    link: Joi.string().uri().required(),
-  }).required(),
-});
+    id: Joi.string().optional().allow(null),
+    link: Joi.string().uri().optional().allow(null),
+  }).optional(),
+}).unknown(true);
 
 const spotifyMetadataSchema = Joi.object({
-  id: Joi.string().required(),
-  link: Joi.string().uri().required(),
-  preview: Joi.string().uri().required(),
-  artists: Joi.array().items(Joi.object({ id: Joi.string().required() })).required(),
+  id: Joi.string().optional().allow(null),
+  link: Joi.string().uri().optional().allow(null),
+  preview: Joi.string().uri().optional().allow(null),
+  artists: Joi.array().items(Joi.object({ id: Joi.string().optional().allow(null) }).unknown(true)).optional().allow(null),
   album: Joi.object({
-    id: Joi.string().required(),
-    cover: Joi.string().uri().required(),
-  }).required(),
-});
+    id: Joi.string().optional().allow(null),
+    cover: Joi.string().uri().optional().allow(null),
+  }).unknown(true).optional().allow(null),
+}).unknown(true);
 
 const externalMetadataSchema = Joi.object({
-  applemusic: Joi.array().items(appleMusicMetadataSchema).optional(),
-  deezer: Joi.array().items(deezerMetadataSchema).optional(),
-  youtube: Joi.array().items(youtubeMetadataSchema).optional(),
-  spotify: Joi.array().items(spotifyMetadataSchema).optional(),
-});
+  applemusic: Joi.array().items(appleMusicMetadataSchema).optional().allow(null),
+  deezer: Joi.array().items(deezerMetadataSchema).optional().allow(null),
+  youtube: Joi.array().items(youtubeMetadataSchema).optional().allow(null),
+  spotify: Joi.array().items(spotifyMetadataSchema).optional().allow(null),
+}).unknown(true);
 
 const albumSchema = Joi.object({
-  track_count: Joi.number().required(),
-  upc: Joi.string().required(),
-  release_date: Joi.date().iso().required(),
-  label: Joi.string().required(),
-  cover: Joi.string().uri().required(),
+  name: Joi.string().optional().allow(null),
+  track_count: Joi.number().optional().allow(null),
+  upc: Joi.string().optional().allow(null),
+  release_date: Joi.date().iso().optional().allow(null),
+  label: Joi.string().optional().allow(null),
+  cover: Joi.string().uri().optional().allow(null),
   covers: Joi.object({
-    small: Joi.string().uri().required(),
-    medium: Joi.string().uri().required(),
-    large: Joi.string().uri().required(),
-  }).required(),
-});
+    small: Joi.string().uri().optional().allow(null),
+    medium: Joi.string().uri().optional().allow(null),
+    large: Joi.string().uri().optional().allow(null),
+  }),
+}).unknown(true);
 
 const artistSchema = Joi.object({
-  name: Joi.string().required(),
-});
+  name: Joi.string().optional().allow(null),
+}).unknown(true);
 
 const trackSchema = Joi.object({
   name: Joi.string().required(),
-  disc_number: Joi.number().required(),
-  track_number: Joi.number().required(),
+  disc_number: Joi.number().optional().allow(null),
+  track_number: Joi.number().optional().allow(null),
   isrc: Joi.string().required(),
-  genres: Joi.array().items(Joi.string()).required(),
+  genres: Joi.array().items(Joi.string()).optional().allow(null),
   duration_ms: Joi.number().required(),
-  release_date: Joi.date().iso().required(),
+  release_date: Joi.date().iso().optional().allow(null),
   artists: Joi.array().items(artistSchema).required(),
-  album: albumSchema.required(),
-  external_metadata: externalMetadataSchema.required(),
-  type: Joi.string().required(),
-  works: Joi.array().items(workSchema).required(),
-});
+  album: albumSchema.optional().allow(null),
+  external_metadata: externalMetadataSchema.optional().allow(null),
+  type: Joi.string().optional().allow(null),
+  works: Joi.array().items(workSchema).optional().allow(null),
+}).unknown(true);
 
 export const trackMetadataResponseSchema = Joi.object({
   data: Joi.array().items(trackSchema).required(),
-});
+}).unknown(true);
