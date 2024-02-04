@@ -35,6 +35,7 @@ class AcrCloudAPIClient {
 
     try {
       const response: AxiosResponse = await this.httpClient.request(config);
+      logger.info("fetchTrackMetadata response status: ", response.status);
       return response.data;
     } catch (error) {
       logger.error('Failed to fetch track metadata:', error);
