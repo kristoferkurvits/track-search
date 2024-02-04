@@ -10,7 +10,7 @@ To interact and test the GraphQL API, Apollo Studio is used, eliminating the nee
 
 For external track information, the service uses the [ACRCloud Metadata API](https://docs.acrcloud.com/reference/metadata-api). To access the ACRCloud API, sign up for credentials at [ACRCloud Console](https://console.acrcloud.com/signup#/register).
 
-You have been provided a *.env.example* file. Fill in the missing field(s) and *rename the file to .env.dev* </br>
+You have been provided a *.env.example* file. Fill in the missing field(s) and **rename the file to .env.dev** </br>
 
 Run the command on your CLI
 ```
