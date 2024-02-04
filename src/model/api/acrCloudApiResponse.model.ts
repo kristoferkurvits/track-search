@@ -4,17 +4,17 @@ export interface ITrackMetadataResponse {
 
 export interface ITrackExternal {
     name: string;
-    disc_number: number;
-    track_number: number;
+    disc_number?: number;
+    track_number?: number;
     isrc: string;
-    genres: string[];
+    genres?: string[];
     duration_ms: number;
     release_date: string;
     artists: IArtist[];
-    album: IAlbum;
-    external_metadata: IExternalMetadata;
-    type: string;
-    works: IWork[];
+    album?: IAlbum;
+    external_metadata?: IExternalMetadata;
+    type?: string;
+    works?: IWork[];
 }
 
 interface IArtist {

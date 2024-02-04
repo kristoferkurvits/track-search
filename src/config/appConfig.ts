@@ -19,6 +19,7 @@ class AppConfig implements Config {
     DB_URL: string;
 
     constructor() {
+      this.NODE_ENV = process.env.NODE_ENV;
       this.ACR_TOKEN = process.env.ACR_TOKEN;
       this.ACR_BASE_URL = process.env.ACR_BASE_URL;
       this.JWT_SECRET = process.env.JWT_SECRET;
@@ -26,6 +27,10 @@ class AppConfig implements Config {
     }
 
     private static instance: AppConfig;
+
+    public isProduction(): boolean {
+      return this.NODE_ENV === "production";
+    }
   
     public static getInstance(): AppConfig {
       if (!this.instance) {

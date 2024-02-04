@@ -7,21 +7,17 @@ import { trackMetadataResponseSchema } from '../../src/model/api/validations/tra
 import { isObjectEmpty } from '../../src/util/helper';
 import { ErrorCodes } from '../../src/util/constants';
 import TrackServiceError from '../../src/error/resolverError';
+import NotFoundError from '../../src/error/notFoundError';
 
 jest.mock('../../src/repository/trackRepository');
 jest.mock('../../src/api/acrCloudApClient');
-jest.mock('../../src/util/mapper');
 jest.mock('../../src/model/api/validations/trackMetadataValidation');
 
-describe('TrackService Queries', () => {
+describe('getTrackByNameAndArtist', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
   
-
-  /*
-    Get track by name and artistName
-  */
   it('should return tracks from the repository when found', async () => {
     const mockTracks = [{ id: '1', name: 'Track 1', artistName: ['Artist'] }];
     (trackRepository.getTrackByNameAndArtist as jest.Mock).mockResolvedValue(mockTracks);
@@ -32,22 +28,32 @@ describe('TrackService Queries', () => {
     expect(trackRepository.getTrackByNameAndArtist).toHaveBeenCalledWith('Track 1', 'Artist');
   });
 
-
-  it('should fetch track data from external API and save it when not found in the repository', async () => {
+  it('should fetch and insert tracks with co-artists when not found in the repository', async () => {
     (trackRepository.getTrackByNameAndArtist as jest.Mock).mockResolvedValue([]);
-    const externalTrackData = {};
-    (acrCloudApClient.fetchTrackMetadata as jest.Mock).mockResolvedValue(externalTrackData);
-    (trackMetadataResponseSchema.validate as jest.Mock).mockReturnValue({ error: null });
-    const mappedTracks = [{}];
-    (mapTracks as jest.Mock).mockReturnValue(mappedTracks);
-    (trackRepository.insertMany as jest.Mock).mockResolvedValue(mappedTracks);
 
-    const tracks = await trackService.getTrackByNameAndArtist('Track 1', 'Artist');
+    const mockExternalTracks = [
+      { name: 'The Recipe', artists: [{ name: 'Dr. Dre' }, { name: 'Kendrick Lamar' }], duration_ms: 300000, isrc: '12345', release_date: '2012-04-01' }
+    ];
+    const mockInsertedTracks = mapTracks(mockExternalTracks);
 
-    expect(tracks).toEqual(mappedTracks);
-    expect(acrCloudApClient.fetchTrackMetadata).toHaveBeenCalled();
-    expect(trackMetadataResponseSchema.validate).toHaveBeenCalledWith(externalTrackData);
-    expect(trackRepository.insertMany).toHaveBeenCalledWith(mappedTracks);
+    (acrCloudApClient.fetchTrackMetadata as jest.Mock).mockResolvedValueOnce({ data: mockExternalTracks });
+    
+    (trackRepository.insertMany as jest.Mock).mockResolvedValue(mockInsertedTracks)
+
+    const mockCoArtistTracks = [
+      { name: 'The Recipe', artists: [{ name: 'Kendrick Lamar' }], duration_ms: 300000, isrc: '67890', release_date: '2012-04-01' }
+    ];
+    (acrCloudApClient.fetchTrackMetadata as jest.Mock).mockResolvedValueOnce({ data: mockCoArtistTracks });
+
+    (trackMetadataResponseSchema.validate as jest.Mock).mockReturnValue({ value: {}, error: null });
+
+    (trackRepository.insertMany as jest.Mock).mockImplementation(tracks => Promise.resolve(tracks));
+
+    const tracks = await trackService.getTrackByNameAndArtist('The Recipe', 'Dr. Dre');
+
+    expect(tracks).toHaveLength(1);
+    expect(acrCloudApClient.fetchTrackMetadata).toHaveBeenCalledTimes(2);
+    expect(trackRepository.insertMany).toHaveBeenCalledTimes(1);
   });
 
 
@@ -62,9 +68,14 @@ describe('TrackService Queries', () => {
       .rejects.toThrow('Failed to validate external track data');
   });
 
-  /*
-    Get all tracks
-  */
+});
+
+
+describe('getAllTracks', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('should return all tracks', async () => {
     // Mock data that the repository would return
     const mockTracks = [
@@ -80,9 +91,14 @@ describe('TrackService Queries', () => {
     expect(trackRepository.getAllTracks).toHaveBeenCalled();
   });
 
-  /*
-    Get track by ID
-  */
+});
+
+
+describe('getTrackById', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('should return a track when found by id', async () => {
     const mockTrack = { id: '1', name: 'Track 1', artistName: ['Artist'], /* other fields */ };
 
@@ -104,7 +120,7 @@ describe('TrackService Queries', () => {
 });
 
 
-describe('TrackSeervicee UpdateTrack', () => {
+describe('updateTrack', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -126,8 +142,6 @@ describe('TrackSeervicee UpdateTrack', () => {
       ...trackData,
     });
 
-    (isObjectEmpty as jest.Mock).mockReturnValue(false);
-
     const updatedTrack = await trackService.updateTrack(trackId, trackData);
 
     expect(trackRepository.updateTrack).toHaveBeenCalledWith(trackId, trackData);
@@ -135,35 +149,54 @@ describe('TrackSeervicee UpdateTrack', () => {
     expect(updatedTrack).toEqual({ id: trackId, ...trackData });
   });
 
-  // Test for error when provided input is empty
   it('should throw TrackServiceError when input is empty', async () => {
     const trackId = '1';
-    const trackData = {}; // Empty track data
+    const trackData = {};
 
-    // Mock isObjectEmpty to return true indicating the object is empty
-    (isObjectEmpty as jest.Mock).mockReturnValue(true);
-
-    // Expect the service method to throw TrackServiceError due to empty input
     await expect(trackService.updateTrack(trackId, trackData))
-      .rejects.toThrow(new TrackServiceError("Invalid input", ErrorCodes.FAILED_TO_UPDATE_TRACK));
+      .rejects.toThrow(new TrackServiceError("Invalid input", ErrorCodes.FAILED_TO_UPDATE_TRACK, 503));
   });
 
-  // Test for error when track is not found
   it('should throw TrackServiceError when track is not found', async () => {
     const trackId = '1';
     const trackData = {
       name: 'New Track Name',
-      artistName: 'New Artist',
+      artistName: ['New Artist'],
     };
 
     // Mock the repository's updateTrack to resolve with null indicating track not found
     (trackRepository.updateTrack as jest.Mock).mockResolvedValue(null);
 
-    // Mock isObjectEmpty to return false indicating the object is not empty
-    (isObjectEmpty as jest.Mock).mockReturnValue(false);
-
     // Expect the service method to throw TrackServiceError due to track not found
     await expect(trackService.updateTrack(trackId, trackData))
-      .rejects.toThrow(new TrackServiceError("Failed to update track", ErrorCodes.TRACK_NOT_FOUND));
+      .rejects.toThrow(new NotFoundError("Failed to update track", ErrorCodes.TRACK_NOT_FOUND));
   });
+});
+
+describe('deleteTrack', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('should delete a track and return a success message', async () => {
+    const id = '12312';
+    const doc = { _id: id, name: 'dada' };
+
+    (trackRepository.deleteTrack as jest.Mock).mockReturnValue(doc);
+
+    const result = await trackService.deleteTrack(id);
+
+    expect(result.message).toBe('Track deleted successfully');
+    expect(result.data).toBe(doc);
+  });
+
+  it('should throw an error if the track is not found', async () => {
+    (trackRepository.deleteTrack as jest.Mock).mockReturnValue(null);
+
+    const id = 'non_existent_track_id';
+
+    await expect(trackService.deleteTrack(id))
+      .rejects.toThrow(new NotFoundError("Track not found", ErrorCodes.TRACK_NOT_FOUND));
+    }
+  );
 });
