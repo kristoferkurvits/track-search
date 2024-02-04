@@ -20,8 +20,8 @@ dist/
 
 *.tsbuildinfo
 
-.env
-.env.*
+.env.dev
+.env.prod
 
 *.pem
 *.key

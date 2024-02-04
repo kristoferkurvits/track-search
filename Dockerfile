@@ -10,6 +10,8 @@ COPY . .
 
 RUN npm run build
 
+RUN npm run test
+
 FROM node:21-alpine
 
 WORKDIR /app
