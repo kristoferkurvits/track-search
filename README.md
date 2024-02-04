@@ -20,13 +20,13 @@ docker-compose up --build
 
 ### Authentication
 Obtain a JWT token by calling the *issueToken* operation.
-Use the obtained token in the Authorization header as Bearer <token> for subsequent API requests.
+Use the obtained token in the Authorization header as "Bearer ${token}" for subsequent API requests.
 
 
 ### Usage
 Detailed usage instructions and API documentation are available within Apollo Studio once the server is running.
 
-Application is available on: http://localhost:4000/graphql
+Application is available on: http://localhost:4000/graphql </br>
 For convenient interaction with the database use Graphical User Interface on: http://localhost:4321
 
 ### API Operations
