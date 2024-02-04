@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import logger from "../config/loggerConfig";
 
 export class HttpClient {
   private static instance: AxiosInstance;
@@ -18,7 +19,7 @@ export class HttpClient {
       HttpClient.instance.interceptors.response.use(
         (response) => response,
         (error) => {
-          console.error('HTTP Client Error:', error);
+          logger.error('HTTP Client Error:', error);
           return Promise.reject(error);
         }
       );

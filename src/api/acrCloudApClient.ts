@@ -6,8 +6,11 @@ import { HttpClient } from "../config/HttpClientConfig";
 import ApiError from "../error/apiError";
 import { ErrorCodes } from '../util/constants';
 import AppConfig from "../config/appConfig";
+import logger from "../config/loggerConfig";
 
-const ACR_BASE_URL = AppConfig.getInstance().ACR_BASE_URL;
+const config = AppConfig.getInstance();
+
+const ACR_BASE_URL = config.ACR_BASE_URL;
 
 class AcrCloudAPIClient {
   private httpClient = HttpClient.getInstance();
@@ -34,10 +37,10 @@ class AcrCloudAPIClient {
       const response: AxiosResponse = await this.httpClient.request(config);
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch track metadata:', error);
-      throw new ApiError("Failed to fetch track metadata", ErrorCodes.FAILED_TO_FETCH_TRACK_METADATA)
+      logger.error('Failed to fetch track metadata:', error);
+      throw new ApiError("Failed to fetch track metadata", ErrorCodes.FAILED_TO_FETCH_TRACK_METADATA, 503)
     }
   }
 }
 
-export default AcrCloudAPIClient;
+export const acrCloudApClient = new AcrCloudAPIClient(config.ACR_TOKEN);

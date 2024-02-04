@@ -87,7 +87,7 @@ const trackSchema = Joi.object({
   disc_number: Joi.number().optional().allow(null),
   track_number: Joi.number().optional().allow(null),
   isrc: Joi.string().required(),
-  genres: Joi.array().items(Joi.string()).optional().allow(null),
+  genres: Joi.array().items(Joi.any()).optional().allow(null),
   duration_ms: Joi.number().required(),
   release_date: Joi.date().iso().optional().allow(null),
   artists: Joi.array().items(artistSchema).required(),

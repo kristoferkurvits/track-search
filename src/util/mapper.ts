@@ -1,8 +1,8 @@
-import { ITrackMetadataResponse } from "../model/api/acrCloudApiResponse.model";
+import { ITrackExternal, ITrackMetadataResponse } from "../model/api/acrCloudApiResponse.model";
 import { ITrack } from "../model/track.model";
 
-export function mapTracks(response: ITrackMetadataResponse): ITrack[] {
-  return response.data.map((sourceTrack) => ({
+export function mapTracks(response: ITrackExternal[]): ITrack[] {
+  return response.map((sourceTrack) => ({
     name: sourceTrack.name,
     artistName: sourceTrack.artists.map((artist) => artist.name),
     duration: sourceTrack.duration_ms,
