@@ -7,7 +7,7 @@ export function mapTracks(response: ITrackExternal[]): ITrack[] {
     artistName: sourceTrack.artists.map((artist) => artist.name),
     duration: sourceTrack.duration_ms,
     ISRC: sourceTrack.isrc,
-    releaseDate: sourceTrack.release_date != null ? new Date(sourceTrack.release_date) : null,
+    releaseDate: sourceTrack?.album?.release_date != null ? new Date(sourceTrack?.album?.release_date) : null,
     createdAt: new Date(),
     updatedAt: new Date(),
   })) as ITrack[];
